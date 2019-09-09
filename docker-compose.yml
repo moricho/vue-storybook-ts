@@ -3,10 +3,10 @@ version: '3'
 services:
   storybook:
     build:
-      context: "./app"
-      dockerfile: "Dockerfile"
+      context: "./"
+      dockerfile: "Dockerfile.storybook"
     ports:
       - "8000:8000"
     restart: on-failure
     volumes:
-      - ./app/storybook:/app/storybook:cached
+      - ./storybook:/app/storybook:cached

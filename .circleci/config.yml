@@ -1,32 +1,25 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: circleci/node:10.16.3
+      - image: google/cloud-sdk
 
-    working_directory: ~/vue-storybook-ts
-
+    working_directory: /home/vue-storybook-ts
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "app/package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: npm install
-
-      - save_cache:
-          paths:
-            - app/node_modules
-          key: v1-dependencies-{{ checksum "app/package.json" }}
-
-      # run tests!
-      # - run: npm test
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          name: Setup cloud SDK
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project $PROJECT_ID
+            gcloud --quiet config set compute/zone us-west1-a
+            gcloud --quiet auth configure-docker
+      - run:
+          name: Push docker image
+          command: |
+            docker build -t storybook -f Dockerfile.storybook .
+            LATEST_TAG=gcr.io/$PROJECT_ID/storybook:latest
+            docker tag storybook $LATEST_TAG
+            docker push $LATEST_TAG
