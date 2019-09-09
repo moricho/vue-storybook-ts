@@ -12,7 +12,7 @@ jobs:
       - run:
           name: Setup cloud SDK
           command: |
-            echo $GCLOUD_SERVICE_KEY > /home/gcloud-service-key.json
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > /home/gcloud-service-key.json
             gcloud auth activate-service-account --key-file /home/gcloud-service-key.json
             gcloud --quiet config set project $PROJECT_ID
             gcloud --quiet config set compute/zone us-west1-a
