@@ -1,7 +1,7 @@
 Dockerfile
 Dockerfile.storybook
 node_modules
-manifest
+kubernetes
 .circleci
 dist
 storybook
