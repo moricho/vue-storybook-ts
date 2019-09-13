@@ -1,7 +1,0 @@
-Dockerfile
-Dockerfile.storybook
-node_modules
-kubernetes
-.circleci
-dist
-storybook
