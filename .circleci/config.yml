@@ -28,7 +28,7 @@ jobs:
       - store_artifacts:
           path: ./storybook
           destination: ~/storybook
-  deploy:
+  image-push:
     docker:
       - image: google/cloud-sdk
     steps:
@@ -51,14 +51,9 @@ jobs:
             docker tag app $LATEST_TAG
             docker push $LATEST_TAG
 
-
 workflows:
   version: 2
-  build:
+  build-deploy:
     jobs:
       - build-storybook
-      - deploy:
-          filters:
-            branches:
-              only:
-                - master
+      - image-push
