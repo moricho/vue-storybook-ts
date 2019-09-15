@@ -56,4 +56,6 @@ workflows:
   build-deploy:
     jobs:
       - build-storybook
-      - image-push
+      - image-push:
+          requires:
+            - build-storybook
