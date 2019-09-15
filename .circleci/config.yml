@@ -8,10 +8,19 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 18.06.0-ce
+      - restore_cache:
+          keys:
+            - v1-{{ checksum "package.json" }}
+            - v1-
+          paths:
+            - /cache/modules.tar
       - run:
           name: Install node modules
           command: |
             npm install
+      - save_cache:
+          key: v1-{{ checksum "package.json" }}
+          paths: /cache/modules.tar
       - run:
           name: Generate Storybook
           command: |
@@ -19,31 +28,37 @@ jobs:
       - store_artifacts:
           path: ./storybook
           destination: ~/storybook
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          name: Setup cloud SDK
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > /home/gcloud-service-key.json
+            gcloud auth activate-service-account --key-file /home/gcloud-service-key.json
+            gcloud --quiet config set project $PROJECT_ID
+            gcloud --quiet config set compute/zone us-west1-a
+            gcloud --quiet auth configure-docker
+      - run:
+          name: Push docker image
+          command: |
+            docker build -t app .
+            LATEST_TAG=gcr.io/$PROJECT_ID/app:$CIRCLE_SHA1
+            docker tag app $LATEST_TAG
+            docker push $LATEST_TAG
+
+
 workflows:
   version: 2
   build:
     jobs:
       - build-storybook
-  # build:
-  #   docker:
-  #     - image: google/cloud-sdk
-  #   working_directory: /home/vue-storybook-ts
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker:
-  #         version: 18.06.0-ce
-  #     - run:
-  #         name: Setup cloud SDK
-  #         command: |
-  #           echo $GCLOUD_SERVICE_KEY | base64 --decode > /home/gcloud-service-key.json
-  #           gcloud auth activate-service-account --key-file /home/gcloud-service-key.json
-  #           gcloud --quiet config set project $PROJECT_ID
-  #           gcloud --quiet config set compute/zone us-west1-a
-  #           gcloud --quiet auth configure-docker
-  #     - run:
-  #         name: Push docker image
-  #         command: |
-  #           docker build -t storybook -f Dockerfile.storybook .
-  #           LATEST_TAG=gcr.io/$PROJECT_ID/storybook:latest
-  #           docker tag storybook $LATEST_TAG
-  #           docker push $LATEST_TAG
+      - deploy:
+          filters:
+            branches:
+              only:
+                - master
