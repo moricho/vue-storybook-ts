@@ -4,6 +4,9 @@ jobs:
     docker:
       - image: circleci/node:10.16
     working_directory: ~/vue-storybook-ts
+    environment:
+      PROJECT_NAME: vue-storybook-ts
+      CLUSTER_NAME: prod-cluster
     steps:
       - checkout
       - setup_remote_docker:
@@ -43,6 +46,7 @@ jobs:
             gcloud --quiet config set project $PROJECT_ID
             gcloud --quiet config set compute/zone us-west1-a
             gcloud --quiet auth configure-docker
+            #gcloud --quiet container clusters $CLUSTER_NAME
       - run:
           name: Push docker image
           command: |
@@ -50,6 +54,17 @@ jobs:
             LATEST_TAG=gcr.io/$PROJECT_ID/app:$CIRCLE_SHA1
             docker tag app $LATEST_TAG
             docker push $LATEST_TAG
+  test:
+    docker:
+      - image: busybox
+    working_directory: /app
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Run tests
+          command: |
+            docker-compose -f docker-compose.test.yml run --rm
 
 workflows:
   version: 2
@@ -57,5 +72,6 @@ workflows:
     jobs:
       - build-storybook
       - image-push:
+      - test:
           requires:
-            - build-storybook
+            - image-push
