@@ -39,7 +39,7 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run:
-          name: Setup cloud SDK
+          name: Setup Cloud SDK
           command: |
             echo $GCLOUD_SERVICE_KEY | base64 --decode > /home/gcloud-service-key.json
             gcloud auth activate-service-account --key-file /home/gcloud-service-key.json
@@ -48,7 +48,7 @@ jobs:
             gcloud --quiet auth configure-docker
             gcloud container clusters get-credentials $CLUSTER_NAME
       - run:
-          name: Push docker image
+          name: Push Docker image
           command: |
             docker build -t app .
             LATEST_TAG=gcr.io/$PROJECT_ID/app:$CIRCLE_SHA1
@@ -57,15 +57,13 @@ jobs:
       - run:
           name: Deploy App to Kubernetes
           command: |
-            kubectl apply -f deployment.yml
-            kubectl apply -f service.yml
-            kubectl apply -f ingress.yml
+            kubectl apply -f .kubernetes/deployment.yml
+            kubectl apply -f .kubernetes/service.yml
+            kubectl apply -f .kubernetes/ingress.yml
 
 workflows:
   version: 2
   build-deploy:
     jobs:
       - build-storybook
-      - deploy:
-          requires:
-            - build-storybook
+      - deploy
