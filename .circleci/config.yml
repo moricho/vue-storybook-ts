@@ -4,9 +4,6 @@ jobs:
     docker:
       - image: circleci/node:10.16
     working_directory: ~/vue-storybook-ts
-    environment:
-      PROJECT_NAME: vue-storybook-ts
-      CLUSTER_NAME: prod-cluster
     steps:
       - checkout
       - setup_remote_docker:
@@ -31,9 +28,12 @@ jobs:
       - store_artifacts:
           path: ./storybook
           destination: ~/storybook
-  image-push:
+  deploy:
     docker:
       - image: google/cloud-sdk
+    environment:
+      CLUSTER_NAME: prod-cluster-1
+      ZONE: us-west1-a
     steps:
       - checkout
       - setup_remote_docker:
@@ -44,9 +44,9 @@ jobs:
             echo $GCLOUD_SERVICE_KEY | base64 --decode > /home/gcloud-service-key.json
             gcloud auth activate-service-account --key-file /home/gcloud-service-key.json
             gcloud --quiet config set project $PROJECT_ID
-            gcloud --quiet config set compute/zone us-west1-a
+            gcloud --quiet config set compute/zone $ZONE
             gcloud --quiet auth configure-docker
-            gcloud --quiet container clusters $CLUSTER_NAME
+            gcloud container clusters get-credentials $CLUSTER_NAME
       - run:
           name: Push docker image
           command: |
@@ -66,6 +66,6 @@ workflows:
   build-deploy:
     jobs:
       - build-storybook
-      - image-push:
+      - deploy:
           requires:
             - build-storybook
