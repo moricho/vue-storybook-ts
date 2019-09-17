@@ -71,7 +71,7 @@ workflows:
   build-deploy:
     jobs:
       - build-storybook
-      - image-push:
+      - image-push
       - test:
           requires:
             - image-push
