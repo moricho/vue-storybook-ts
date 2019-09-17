@@ -1,10 +1,10 @@
-apiVersion: extension/v1beta1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ingress
 spec:
   rules:
-    - host: aaa
+    - host: sampleapp.example.com
       http:
         paths:
           - backend:

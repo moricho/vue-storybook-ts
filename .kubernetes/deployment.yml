@@ -19,6 +19,3 @@ spec:
           image: gcr.io/$PROJECT_ID/app:$CIRCLE_SHA1
           ports:
             - containerPort: 80
-          dnsConfig:
-            nameservers:
-              - 8.8.8.8
