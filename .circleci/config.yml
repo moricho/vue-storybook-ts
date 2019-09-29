@@ -36,8 +36,7 @@ jobs:
       ZONE: us-west1-a
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 18.06.0-ce
+      - setup_remote_docker
       - run:
           name: Setup Cloud SDK
           command: |
