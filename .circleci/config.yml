@@ -50,12 +50,12 @@ jobs:
     machine: true
     environment:
         CLUSTER_NAME: circle-ci-cluster
-        ZONE: us-west1-a
     steps:
       - gke/install
       - gke/init
       - gke/rollout-image:
-          deployment: $CLUSTER_NAME
+          cluster: $CLUSTER_NAME
+          deployment: web-deployment
           container: vue-storybook-ts-web
           image: gcr.io/$GOOGLE_PROJECT_ID/app:$CIRCLE_SHA1
 
