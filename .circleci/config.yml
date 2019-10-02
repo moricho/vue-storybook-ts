@@ -1,7 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.0.1
-  gcp-gke: circleci/gcp-gke@0.1.0
+  gke: circleci/gcp-gke@0.1.0
   gcr: circleci/gcp-gcr@0.0.2
 jobs:
   build-storybook:
@@ -38,10 +37,10 @@ jobs:
     machine: true
     steps:
       - checkout
+      - gcr/gcr-auth
       - gcr/build-image:
           image: app
           tag: $CIRCLE_SHA1
-      - gcr/gcr-auth
       - gcr/push-image:
           image: app
           tag: $CIRCLE_SHA1
@@ -53,9 +52,9 @@ jobs:
         CLUSTER_NAME: circle-ci-cluster
         ZONE: us-west1-a
     steps:
-      - gcp-gke/install
-      - gcp-gke/init
-      - gcp-gke/rollout-image:
+      - gke/install
+      - gke/init
+      - gke/rollout-image:
           deployment: $CLUSTER_NAME
           container: vue-storybook-ts-web
           image: gcr.io/$GOOGLE_PROJECT_ID/app:$CIRCLE_SHA1
