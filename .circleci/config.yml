@@ -35,6 +35,7 @@ jobs:
 
   build-push-image:
     description: Build and push image to Google Container Registry
+    machine: true
     steps:
       - gcr/build-image:
           image: app
@@ -45,6 +46,7 @@ jobs:
 
   deploy:
     description: Deploy application to Google Kubernetes Engine
+    machine: true
     environment:
         CLUSTER_NAME: circle-ci-cluster
         ZONE: us-west1-a
