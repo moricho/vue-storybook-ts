@@ -64,7 +64,13 @@ workflows:
   build-deploy:
     jobs:
       - build-storybook
-      - build-push-image
+      - build-push-image:
+          filters:
+             branches:
+               only: master
       - deploy:
           requires:
             - build-push-image
+          filters:
+              branches:
+                  only: master
