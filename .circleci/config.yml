@@ -30,7 +30,10 @@ jobs:
             npm run storybook:build
       - store_artifacts:
           path: ./storybook
-          destination: ~/storybook
+      - run:
+          name: Notify Artifact to PR
+          command: |
+            npm run moxci
 
   build-push-image:
     description: Build and push image to Google Container Registry
