@@ -25,6 +25,8 @@
     "babel-preset-vue": "^2.0.2",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
     "moxci": "0.0.1",
+    "pug": "^2.0.4",
+    "pug-loader": "^2.4.0",
     "typescript": "^3.4.3",
     "vue-template-compiler": "^2.6.10"
   },
