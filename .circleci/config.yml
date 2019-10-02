@@ -32,7 +32,7 @@ jobs:
     docker:
       - image: google/cloud-sdk
     environment:
-      CLUSTER_NAME: prod-cluster-1
+      CLUSTER_NAME: circle-ci-cluster
       ZONE: us-west1-a
     steps:
       - checkout
@@ -45,7 +45,7 @@ jobs:
             gcloud --quiet config set project $PROJECT_ID
             gcloud --quiet config set compute/zone $ZONE
             gcloud --quiet auth configure-docker
-            gcloud container clusters get-credentials $CLUSTER_NAME
+            #gcloud container clusters get-credentials $CLUSTER_NAME
       - run:
           name: Push Docker image
           command: |
@@ -53,12 +53,12 @@ jobs:
             LATEST_TAG=gcr.io/$PROJECT_ID/app:$CIRCLE_SHA1
             docker tag app $LATEST_TAG
             docker push $LATEST_TAG
-      - run:
-          name: Deploy App to Kubernetes
-          command: |
-            kubectl apply -f .kubernetes/deployment.yml
-            kubectl apply -f .kubernetes/service.yml
-            kubectl apply -f .kubernetes/ingress.yml
+      # - run:
+      #     name: Deploy App to Kubernetes
+      #     command: |
+      #       kubectl apply -f .kubernetes/deployment.yml
+      #       kubectl apply -f .kubernetes/service.yml
+      #       kubectl apply -f .kubernetes/ingress.yml
 
 workflows:
   version: 2
