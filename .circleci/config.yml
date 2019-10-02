@@ -41,6 +41,7 @@ jobs:
       - gcr/build-image:
           image: app
           tag: $CIRCLE_SHA1
+      - gcr/gcr-auth
       - gcr/push-image:
           image: app
           tag: $CIRCLE_SHA1
