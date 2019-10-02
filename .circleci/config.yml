@@ -56,7 +56,7 @@ jobs:
       - gke/rollout-image:
           cluster: $CLUSTER_NAME
           deployment: web-deployment
-          container: vue-storybook-ts-web
+          container: web
           image: gcr.io/$GOOGLE_PROJECT_ID/app:$CIRCLE_SHA1
 
 workflows:
